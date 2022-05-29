@@ -1,0 +1,89 @@
+...Question 1...
+
+create table fd(accno int primary key,year int,amount int,interest int);
+insert into fd values(&accno,&year,&amount,&interest);
+
+declare
+	cursor c1 is select * from fd;
+begin
+	for i in c1
+	loop
+		if i.amount<=1000
+		then
+			update fd set interest=i.amount*0.1 where accno=i.accno;
+		elsif i.amount>1000 and i.amount<=5000
+		then
+			update fd set interest=i.amount*0.2 where accno=i.accno;
+		else
+			update fd set interest=i.amount*0.3 where accno=i.accno;
+		end if;
+	end loop;
+end;
+/
+
+select * from fd;
+
+...Question 2...
+
+create table eb(billno int primary key,name varchar(20),unit int,charge float);
+insert into eb values(&billno,'&name',&unit,&charge);
+
+declare
+	cursor ebc is select * from eb;
+begin
+	for i in ebc
+	loop
+		if i.unit<=100
+		then
+			update eb set charge=100+unit*0.1 where billno=i.billno;
+		elsif i.unit>100 and i.unit<=200
+		then
+			update eb set charge=100+unit*0.2 where billno=i.billno;
+		else
+			update eb set charge=100+unit*0.3 where billno=i.billno;
+		end if;
+	end loop;
+end;
+/
+
+...Question 3...
+
+create table item(item_id int primary key,item_name varchar(50),item_price int);
+insert into item values(&item_id,'&item_name',&item_price);
+
+declare
+	r int;
+begin
+	update item set item_price=item_price+100;
+	if sql%notfound
+	then
+		dbms_output.put_line('Not Updated');
+	else
+		r:=sql%rowcount;
+		dbms_output.put_line('Price for '||r||' items updated');
+	end if;
+end;
+/
+
+...Question 4...
+
+create table works1(emp_id int primary key,emp_name varchar(20),salary int);
+insert into works1 values(&emp_id,'&emp_name',&salary);
+
+set serveroutput on;
+declare
+	i int:=0;
+	cursor c3 is select * from works1 order by salary desc;
+	r c3%rowtype;
+begin
+	dbms_output.put_line('3 HIGHEST PAID EMPLOYEES ARE');
+	open c3;
+	loop
+		exit when i=3;
+		fetch c3 into r;
+		dbms_output.put_line(r.emp_id||' '||r.emp_name||' '||r.salary);
+		i:=i+1;
+	end loop;
+	close c3;
+end;
+/
