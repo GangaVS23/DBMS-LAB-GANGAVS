@@ -1,0 +1,135 @@
+...Question 1...
+
+declare
+	fact number:=1;
+	n number:=&n;
+	begin
+		while n>0
+		loop
+			fact:=fact*n;
+			n:=n-1;
+		end loop;
+		dbms_output.put_line('Factorial is : '||fact);
+	end;
+/
+
+set serveroutput on;
+
+...Question 2...
+
+set serveroutput on;
+
+declare
+	flag number:=0;
+	n number:=&n;
+	begin
+		for i in 2..n/2
+		loop
+			if mod(n,i)=0
+				then
+					flag:=1;
+			end if;
+		end loop;
+		
+		if flag=0
+			then
+				dbms_output.put_line(n||' is a prime number');
+			else
+				dbms_output.put_line(n||' is not a prime number');
+		end if;
+	end;
+/
+	
+	
+...........Functions...........
+
+...Question 1...
+
+create or replace function amstrong(x in number)
+return number as
+	powr number;
+	num number;
+	len number;
+	a number;
+begin	
+	num:=x;
+	powr:=0;
+	len:=length(to_char(num));
+	for i in 1..len
+	loop
+		a:=mod(num,10);
+		powr:=powr+power(a,len);
+		num:=trunc(num/10);
+	end loop;
+	return powr;
+end;
+/
+
+(...function created...)
+
+set serveroutput on;
+declare
+	x number;
+	value number;
+begin
+	value:=&value;
+	x:=amstrong(value);
+	if x=value
+	then	
+		dbms_output.put_line(value||' is an amstrong number');
+	else
+		dbms_output.put_line(value||' is not an amstrong number');
+	end if;
+end;
+/
+
+
+...Question 2...
+
+create table shop(itemid varchar(20) primary key,item_name varchar(20),price number);
+insert into shop values('&itemid','&item_name',&price);
+
+create or replace function showdata(id shop.itemid%type)
+return number as
+	name shop.item_name%type;
+	price shop.price%type;
+begin
+	select item_name,price into name,price from shop where itemid=id;
+	dbms_output.put_line('Item name : '||name);
+	dbms_output.put_line('Price : '||price);
+	return 0;
+end;
+/
+
+set serveroutput on;
+
+declare
+	id shop.itemid%type;
+begin
+	id:=&id;
+	dbms_output.put_line(showdata(id));
+end;
+/
+
+...Question 3...
+
+create or replace function pow(p in number,q in number)
+return number as
+	r number;
+begin
+	r:=power(p,q);
+	return r;
+end;
+/
+
+
+set serveroutput on;
+declare
+	a number;
+	b number;
+begin
+	a:=&a;
+	b:=&b;
+	dbms_output.put_line('Result : '||pow(a,b));
+end;
+/

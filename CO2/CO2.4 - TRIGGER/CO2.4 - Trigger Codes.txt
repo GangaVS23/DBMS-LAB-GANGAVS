@@ -1,0 +1,67 @@
+...Question 1...
+
+create table sample(sid number,sname varchar(20));
+
+insert into sample values(&sid,'&sname');
+
+create or replace trigger t1
+	before insert or update or delete on sample for each row
+begin
+	raise_application_error(-20000,'you are not permitted to  do INSERT/UPDATE/DELETE');
+end;
+/
+
+insert into sample values(&sid,'&sname');
+
+...Question 2...
+
+#professor table
+
+create table professor(pnum number,pname varchar(20),salary number);
+
+
+create or replace trigger minsalary
+	before insert on professor for each row
+begin
+	if(:new.salary<60000)
+		then raise_application_error(-20004,'Violation of minimum professor salary');
+end if;
+end;
+/
+
+insert into professor values (&pnum,'&pname',&salary);
+
+...Question 3...
+
+create table professorbacklog as select * from professor;
+
+delete from professorbacklog;
+
+create or replace trigger backlog
+	after delete on professor for each row
+begin
+	insert into professorbacklog values(:old.pnum,:old.pname,:old.salary);
+end;
+/
+select * from professor;
+delete from professor where pnum=1;
+select * from professor;
+select * from professorbacklog;
+
+...Question 4...
+
+create table gold(cdate date,price number);
+insert into gold values('&date',&price);
+
+create table oldgold(odate date,oprice number);
+
+create or replace trigger gold
+	after update on gold for each row
+begin
+	insert into oldgold values(:old.cdate,:old.price);
+end;
+/
+
+update gold set price=6000,cdate='27-MAY-22';
+update gold set price=5000,cdate='28-MAY-22';
+update gold set price=5500,cdate='29-MAY-22';
